@@ -1,3 +1,7 @@
+/**
+ * Author: Shufan Sun
+ * Created on Sep 29th, 2023
+ */
 import './App.css';
 import React, { Component } from 'react';
 import Select from 'react-select';
@@ -12,23 +16,26 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dogs: [],
-      selectedBreeds: [],
-      breedImages: {},
-      imageData: { breedName: '', imgIndex: 0 },
-      fullScreenImage: null,
+      dogs: [], // Store the list of dog breeds
+      selectedBreeds: [], // Store selected dog breeds
+      breedImages: {}, // Store images for each dog breed
+      imageData: { breedName: '', imgIndex: 0 }, // Store the currently displayed image
+      fullScreenImage: null, // State to track full-screen image display
       currentBreedIndex: 0, // Track the currently displayed breed index
     };
   }
 
   componentDidMount() {
+    // Fetch the list of dog breeds from the API when the component mounts
     this.fetchDogBreeds();
   }
 
   fetchDogBreeds() {
+    // Function to fetch the list of dog breeds from the API
     fetch('https://dog.ceo/api/breeds/list/all')
       .then((res) => res.json())
       .then((data) => {
+        // Store the list of dog breeds in the component's state
         this.setState({ dogs: Object.keys(data.message) });
       })
       .catch((error) => {
@@ -42,6 +49,7 @@ class App extends Component {
     const breedImages = this.state.breedImages[breedName];
     const totalImages = breedImages.length;
 
+    //functions that could be implemented using buttons
     if (action === 'next-img') {
       // Increment the index to show the next image
       const nextIndex = (currentBreedIndex + 1) % totalImages;
@@ -59,6 +67,7 @@ class App extends Component {
 
   findByBreed() {
     const { selectedBreeds } = this.state;
+    // Function to fetch images for selected dog breeds
 
     if (selectedBreeds.length === 0) {
       console.error('No breeds selected.');
@@ -91,10 +100,12 @@ class App extends Component {
   }
 
   handleBreedChange = (selectedOptions) => {
+    // Function to handle changes in selected dog breeds
     this.setState({ selectedBreeds: selectedOptions });
   };
 
   viewImage = (breedName, imageIndex) => {
+    // Function to display a full-screen image
     this.setState({
       imageData: {
         breedName,
@@ -105,9 +116,11 @@ class App extends Component {
   };
 
   closeFullScreenImage = () => {
+    // Function to close the full-screen image
     this.setState({ fullScreenImage: null });
   };
 
+    // Function to scroll to the next breed gallery
   scrollToNextGallery = () => {
     const { currentBreedIndex, selectedBreeds } = this.state;
     const nextIndex = (currentBreedIndex + 1) % selectedBreeds.length;
@@ -138,6 +151,7 @@ class App extends Component {
             <em>Welcome to My Dog Search App</em>
           </h1>
         </header>
+        {/* Select component for choosing dog breeds */}
         <Select
           options={breedOptions}
           isMulti
@@ -145,8 +159,10 @@ class App extends Component {
           onChange={this.handleBreedChange}
           components={animatedComponents}
         />
+        {/* Button to fetch images for selected breeds */}
         <button onClick={() => this.findByBreed()}>Find By Breed</button>
         {fullScreenImage && (
+          // Full-screen image display when an image is clicked
           <div
             className="full-screen-overlay"
             onClick={() => this.closeFullScreenImage()}
@@ -156,6 +172,7 @@ class App extends Component {
               className="full-screen-image"
               alt={`Dog ${imageData.imgIndex}`}
             />
+            {/* Buttons for navigating between full-screen images */}
             <button
               className="full-screen-nav-button prev"
               onClick={() => this.imgAction('prev-img')}
@@ -172,6 +189,7 @@ class App extends Component {
         )}
         {selectedBreeds.map((selectedBreed, index) => (
           <div key={index} id={selectedBreed.value}>
+            {/* Display the breed name */}
             <h2>{selectedBreed.value}</h2>
             {breedImages[selectedBreed.value] &&
             breedImages[selectedBreed.value].length > 0 ? (
@@ -179,6 +197,7 @@ class App extends Component {
                 columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}
               >
                 <Masonry gutter="20px">
+                  {/* Display breed images in a responsive grid */}
                   {breedImages[selectedBreed.value].map(
                     (imageURL, imageIndex) => (
                       <img
@@ -200,10 +219,12 @@ class App extends Component {
                 </Masonry>
               </ResponsiveMasonry>
             ) : (
+              // Display a message if no images are found for the breed
               <p>No images found for {selectedBreed.value}.</p>
             )}
           </div>
         ))}
+        {/* Link to a personal website */}
         <a
           className="App-link"
           href="https://shufansun.github.io/"
