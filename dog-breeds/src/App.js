@@ -1,12 +1,14 @@
 import './App.css';
 import React, { Component } from 'react';
+import Select from 'react-select';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dogs: [],
-      selectedBreedImage: null,
+      selectedBreeds: [], // Store selected breed options
+      breedImages: {}, // Store images for selected breeds
     };
   }
 
@@ -26,61 +28,46 @@ class App extends Component {
   }
 
   findByBreed() {
-    const { dogs } = this.state;
-    const selectedBreed = document.getElementById('breedList').value;
+    const { selectedBreeds } = this.state;
 
-    if (!selectedBreed) {
-      console.error('No breed selected.');
+    if (selectedBreeds.length === 0) {
+      console.error('No breeds selected.');
       return;
     }
 
-    const url = `https://dog.ceo/api/breed/${selectedBreed}/images`;
+    const fetchPromises = selectedBreeds.map((selectedBreed) => {
+      const url = `https://dog.ceo/api/breed/${selectedBreed.value}/images`;
+      return fetch(url)
+        .then((response) => response.json());
+    });
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        this.getImageURL(data.message);
+    Promise.all(fetchPromises)
+      .then((results) => {
+        const breedImages = {};
+
+        results.forEach((result, index) => {
+          const breedName = selectedBreeds[index].value;
+          breedImages[breedName] = result.message;
+        });
+
+        this.setState({ breedImages });
       })
       .catch((error) => {
         console.error('Error fetching images:', error);
       });
   }
 
-  // getImageURL(data) {
-  //   // Get a random image URL
-  //   const randomNumber = Math.floor(Math.random() * data.length);
-  //   const randomImageURL = data[randomNumber];
-
-  //   // Update the component's state to display the selected image
-  //   this.setState({ selectedBreedImage: randomImageURL });
-  // }
-  findByBreed() {
-    const selectedBreed = document.getElementById('breedList').value;
-  
-    if (!selectedBreed) {
-      console.error('No breed selected.');
-      return;
-    }
-  
-    const url = `https://dog.ceo/api/breed/${selectedBreed}/images`;
-  
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        this.setImageURLs(data.message);
-      })
-      .catch((error) => {
-        console.error('Error fetching images:', error);
-      });
-  }
-  
-  setImageURLs(imageURLs) {
-    // Update the component's state to store all image URLs for the selected breed
-    this.setState({ selectedBreedImages: imageURLs });
-  }
+  handleBreedChange = (selectedOptions) => {
+    this.setState({ selectedBreeds: selectedOptions });
+  };
 
   render() {
-    const { dogs, selectedBreedImages } = this.state;
+    const { dogs, breedImages, selectedBreeds } = this.state;
+
+    const breedOptions = dogs.map((dogBreed) => ({
+      value: dogBreed,
+      label: dogBreed,
+    }));
 
     return (
       <div className="App">
@@ -89,31 +76,28 @@ class App extends Component {
             <em>Welcome to My Dog Search App</em>
           </h1>
         </header>
-        <select id="breedList">
-          {dogs.map((dogBreed) => (
-            <option key={dogBreed} value={dogBreed}>
-              {dogBreed}
-            </option>
-          ))}
-        </select>
+        <Select
+          options={breedOptions}
+          isMulti
+          value={selectedBreeds}
+          onChange={this.handleBreedChange}
+        />
         <button onClick={() => this.findByBreed()}>Find By Breed</button>
-        {/* <div id="listImageContainer">
-          {selectedBreedImage && (
-            <img
-              src={selectedBreedImage}
-              alt={`Dog ${dogs.indexOf(selectedBreedImage)}`}
-            />
-          )}
-        </div> */}
+
         <div id="listImageContainer">
-        {selectedBreedImages && selectedBreedImages.length > 0 ? (
-          selectedBreedImages.map((imageURL, index) => (
-            <img key={index} src={imageURL} alt={`Dog ${index}`} />
-          ))
-        ) : (
-          <p>No images found for the selected breed.</p>
-        )}
-      </div>
+          {selectedBreeds.map((selectedBreed, index) => (
+            <div key={index}>
+              <h2>{selectedBreed.value}</h2>
+              {breedImages[selectedBreed.value] && breedImages[selectedBreed.value].length > 0 ? (
+                breedImages[selectedBreed.value].map((imageURL, imageIndex) => (
+                  <img key={imageIndex} src={imageURL} alt={`Dog ${imageIndex}`} />
+                ))
+              ) : (
+                <p>No images found for {selectedBreed.value}.</p>
+              )}
+            </div>
+          ))}
+        </div>
         <a
           className="App-link"
           href="https://shufansun.github.io/"
