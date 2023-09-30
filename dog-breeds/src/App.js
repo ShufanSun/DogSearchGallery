@@ -1,7 +1,9 @@
 import './App.css';
 import React, { Component } from 'react';
 import Select from 'react-select';
-
+import makeAnimated from 'react-select/animated';
+import 'bootstrap/dist/css/bootstrap.min.css';
+const animatedComponent=makeAnimated()
 class App extends Component {
   constructor(props) {
     super(props);
@@ -81,6 +83,7 @@ class App extends Component {
           isMulti
           value={selectedBreeds}
           onChange={this.handleBreedChange}
+          components={animatedComponent}
         />
         <button onClick={() => this.findByBreed()}>Find By Breed</button>
 
