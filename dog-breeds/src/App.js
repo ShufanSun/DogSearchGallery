@@ -1,9 +1,12 @@
+// Author: Shufan Sun
+//Creation date: 2023. 9.29
 import './App.css';
 import React, { Component } from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+import FullScreenImage from './FullScreenImage'; // Import the FullScreenImage component
 
 const animatedComponents = makeAnimated();
 
@@ -14,18 +17,23 @@ class App extends Component {
       dogs: [],
       selectedBreeds: [],
       breedImages: {},
-      imageData: { img: '', i: 0 }
+      imageData: { img: '', i: 0 },
+      fullScreenImage: null, // State to track full-screen image display
     };
   }
 
+
   componentDidMount() {
+    // When the component mounts, fetch the list of dog breeds from the API.
     this.fetchDogBreeds();
   }
 
   fetchDogBreeds() {
+    // Function to fetch the list of dog breeds from the API.
     fetch('https://dog.ceo/api/breeds/list/all')
       .then((res) => res.json())
       .then((data) => {
+        // Store the list of dog breeds in the component's state.
         this.setState({ dogs: Object.keys(data.message) });
       })
       .catch((error) => {
@@ -34,21 +42,18 @@ class App extends Component {
   }
 
   imgAction = (action) => {
-    const { imageData, selectedBreeds, breedImages } = this.state;
-    let { i } = imageData;
-
-    if (action === 'next-img') {
-      i = (i + 1) % selectedBreeds.length; // Wrap around to the first image if at the end
-      this.setState({ imageData: { img: breedImages[selectedBreeds[i].value][0], i } });
-    } else if (action === 'prev-img') {
-      i = (i - 1 + selectedBreeds.length) % selectedBreeds.length; // Wrap around to the last image if at the beginning
-      this.setState({ imageData: { img: breedImages[selectedBreeds[i].value][0], i } });
-    }
-
-    
-};
+    const { imageData, selectedBreeds } = this.state;
+    const currentBreedIndex = imageData.i;
+    const currentBreed = selectedBreeds[currentBreedIndex].value;
+    const breedImages = this.state.breedImages[currentBreed];
+    const totalImages = breedImages.length;
+  
+ 
+  };
+  
 
   findByBreed() {
+    // Function to fetch images for selected dog breeds.
     const { selectedBreeds } = this.state;
 
     if (selectedBreeds.length === 0) {
@@ -78,17 +83,22 @@ class App extends Component {
       });
   }
 
- 
   handleBreedChange = (selectedOptions) => {
+    // Function to handle changes in selected dog breeds.
     this.setState({ selectedBreeds: selectedOptions });
   };
 
   viewImage = (img, i) => {
-    this.setState({ imageData: { img, i } });
+    // Set the full-screen image in the state when an image is clicked
+    this.setState({ fullScreenImage: img });
   };
 
+  closeFullScreenImage = () => {
+    // Close the full-screen image
+    this.setState({ fullScreenImage: null });
+  };
   render() {
-    const { dogs, breedImages, selectedBreeds, imageData } = this.state;
+    const { dogs, breedImages, selectedBreeds, imageData ,fullScreenImage} = this.state;
 
     const breedOptions = dogs.map((dogBreed) => ({
       value: dogBreed,
@@ -122,10 +132,6 @@ class App extends Component {
             overflow: 'hidden',
           }}>
 
-            <button style={{position:'absolute',top:'10px',right:'10px'}}>X</button>
-            <button onClick={()=>this.imgAction('prev-img')}>Previous</button>
-            <img src={imageData.img} style={{ width: 'auto', maxWidth: '90%', maxHeight: '90%' }} alt={`Dog ${imageData.i}`} />
-            <button onClick={()=>this.imgAction('next-img')}>Next</button>
           </div>
         )}
         <div id="listImageContainer">
@@ -160,6 +166,12 @@ class App extends Component {
         >
           <strong>Link to my personal website!</strong>
         </a>
+        {fullScreenImage && (
+          <FullScreenImage
+            imageUrl={fullScreenImage}
+            onClose={this.closeFullScreenImage}
+          />
+        )}
       </div>
     );
   }
