@@ -146,26 +146,28 @@ class App extends Component {
           components={animatedComponents}
         />
         <button onClick={() => this.findByBreed()}>Find By Breed</button>
-        {imageData.img && (
+        {fullScreenImage && (
           <div
-            style={{
-              width: '100%',
-              height: '100vh',
-              background: 'black',
-              position: 'fixed',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              overflow: 'hidden',
-            }}
+            className="full-screen-overlay"
+            onClick={() => this.closeFullScreenImage()}
           >
-            <button onClick={() => this.imgAction('prev-img')}>Previous</button>
             <img
-              src={imageData.img}
-              style={{ width: 'auto', maxWidth: '90%', maxHeight: '90%' }}
+              src={fullScreenImage}
+              className="full-screen-image"
               alt={`Dog ${imageData.imgIndex}`}
             />
-            <button onClick={() => this.imgAction('next-img')}>Next</button>
+            <button
+              className="full-screen-nav-button prev"
+              onClick={() => this.imgAction('prev-img')}
+            >
+              Previous
+            </button>
+            <button
+              className="full-screen-nav-button next"
+              onClick={() => this.imgAction('next-img')}
+            >
+              Next
+            </button>
           </div>
         )}
         {selectedBreeds.map((selectedBreed, index) => (

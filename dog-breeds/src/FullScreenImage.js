@@ -1,6 +1,8 @@
 import React from 'react';
 
 const FullScreenImage = ({ imageUrl, onClose }) => {
+  const enlargeFactor = 2; // Adjust this factor to control the enlargement level
+
   return (
     <div
       className="full-screen-image"
@@ -23,8 +25,12 @@ const FullScreenImage = ({ imageUrl, onClose }) => {
         src={imageUrl}
         alt="Full-Screen Dog"
         style={{
-          maxWidth: '80%', // Adjust this value to your desired enlargement level (e.g., 80% for 80% enlargement)
-          maxHeight: '80%', // Adjust this value to your desired enlargement level (e.g., 80% for 80% enlargement)
+          width: 'auto',
+          height: 'auto',
+          maxWidth: '100%', // Limit the width to the screen width
+          maxHeight: '100%', // Limit the height to the screen height
+          transform: `scale(${enlargeFactor})`, // Apply the proportional enlargement
+          transformOrigin: 'center', // Center the enlargement
         }}
       />
     </div>
