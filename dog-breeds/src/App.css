@@ -26,6 +26,12 @@
 
 .App-link {
   color: #c15e08f6;
+  position: fixed; /* Fixed position */
+  bottom: 10px; /* Adjust this value as needed to control vertical positioning */
+  right: 10px; /* Adjust this value as needed to control horizontal positioning */
+  background-color: #efa607; /* Background color */
+  padding: 10px; /* Padding for the link */
+  border: 1px solid #f8f007; /* Border for the link */
 }
 
 

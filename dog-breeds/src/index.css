@@ -24,11 +24,23 @@ h2{
   margin-top:30px;
 }
 
-button{
-  margin-top:30px;
-  text-align:center;
+button {
+  margin-top: 30px;
+  text-align: center;
+  background-color: #a25507;
+  color: #ecce22;
+  border: none;
+  border-radius: 12px; /* Increase the border-radius for a rounder shape */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f48712;
+  }
 }
 
 img{
-  max-height:300px;
+  
 }
