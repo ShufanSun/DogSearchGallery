@@ -45,4 +45,12 @@
   background: linear-gradient(to bottom, #f3d00c, #f7a204) !important;
 
 }
-
+.scroll-button{
+  color: #f7e00ef6;
+  position: fixed; /* Fixed position */
+  bottom: 70px; /* Adjust this value as needed to control vertical positioning */
+  right: 10px; /* Adjust this value as needed to control horizontal positioning */
+  background-color: #a96205; /* Background color */
+  padding: 10px; /* Padding for the link */
+  border: 1px solid #f8f007; /* Border for the link */
+}
