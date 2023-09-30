@@ -23,9 +23,9 @@ const FullScreenImage = ({ imageUrl, onClose }) => {
         src={imageUrl}
         alt="Full-Screen Dog"
         style={{
-            maxWidth: '90vw', // Adjust this value to your preference for full-screen size
-            maxHeight: '90vh', // Adjust this value to your preference for full-screen size
-          }}
+          maxWidth: '80%', // Adjust this value to your desired enlargement level (e.g., 80% for 80% enlargement)
+          maxHeight: '80%', // Adjust this value to your desired enlargement level (e.g., 80% for 80% enlargement)
+        }}
       />
     </div>
   );

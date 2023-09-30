@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import FullScreenImage from './FullScreenImage'; // Import the FullScreenImage component
 
+
 const animatedComponents = makeAnimated();
 
 class App extends Component {
@@ -55,43 +56,54 @@ class App extends Component {
   findByBreed() {
     // Function to fetch images for selected dog breeds.
     const { selectedBreeds } = this.state;
-
+  
     if (selectedBreeds.length === 0) {
       console.error('No breeds selected.');
       return;
     }
-
+  
     const fetchPromises = selectedBreeds.map((selectedBreed) => {
       const url = `https://dog.ceo/api/breed/${selectedBreed.value}/images`;
       return fetch(url)
-        .then((response) => response.json());
+        .then((response) => response.json())
+        .then((result) => ({
+          breedName: selectedBreed.value,
+          images: result.message,
+        }));
     });
-
+  
     Promise.all(fetchPromises)
       .then((results) => {
         const breedImages = {};
-
-        results.forEach((result, index) => {
-          const breedName = selectedBreeds[index].value;
-          breedImages[breedName] = result.message;
+  
+        results.forEach((result) => {
+          breedImages[result.breedName] = result.images;
         });
-
+  
         this.setState({ breedImages });
       })
       .catch((error) => {
         console.error('Error fetching images:', error);
       });
   }
+  
 
   handleBreedChange = (selectedOptions) => {
     // Function to handle changes in selected dog breeds.
     this.setState({ selectedBreeds: selectedOptions });
   };
 
-  viewImage = (img, i) => {
-    // Set the full-screen image in the state when an image is clicked
-    this.setState({ fullScreenImage: img });
+  viewImage = (breedName, imageIndex) => {
+    const { breedImages } = this.state;
+    this.setState({
+      imageData: {
+        breedName,
+        imgIndex: imageIndex,
+      },
+      fullScreenImage: breedImages[breedName][imageIndex],
+    });
   };
+  
 
   closeFullScreenImage = () => {
     // Close the full-screen image
@@ -134,30 +146,31 @@ class App extends Component {
 
           </div>
         )}
-        <div id="listImageContainer">
-          {selectedBreeds.map((selectedBreed, index) => (
-            <div key={index}>
-              <h2>{selectedBreed.value}</h2>
-              {breedImages[selectedBreed.value] && breedImages[selectedBreed.value].length > 0 ? (
-                <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
-                  <Masonry gutter="20px">
-                    {breedImages[selectedBreed.value].map((imageURL, imageIndex) => (
-                      <img
-                        key={imageIndex}
-                        src={imageURL}
-                        style={{ display: "block", maxWidth: "100%", height: "auto", cursor: 'pointer' }}
-                        alt={`Dog ${imageIndex}`}
-                        onClick={() => this.viewImage(imageURL, imageIndex)}
-                      />
-                    ))}
-                  </Masonry>
-                </ResponsiveMasonry>
-              ) : (
-                <p>No images found for {selectedBreed.value}.</p>
-              )}
-            </div>
-          ))}
-        </div>
+        <div id="listImageContainer" className="linear-gradient-image-container">
+  {selectedBreeds.map((selectedBreed, index) => (
+    <div key={index}>
+      <h2>{selectedBreed.value}</h2>
+      {breedImages[selectedBreed.value] && breedImages[selectedBreed.value].length > 0 ? (
+        <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
+          <Masonry gutter="20px">
+            {breedImages[selectedBreed.value].map((imageURL, imageIndex) => (
+              <img
+                key={imageIndex}
+                src={imageURL}
+                style={{ display: "block", maxWidth: "100%", height: "auto", cursor: 'pointer' }}
+                alt={`Dog ${imageIndex}`}
+                onClick={() => this.viewImage(selectedBreed.value, imageIndex)}
+              />
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
+      ) : (
+        <p>No images found for {selectedBreed.value}.</p>
+      )}
+    </div>
+  ))}
+</div>
+
         <a
           className="App-link"
           href="https://shufansun.github.io/"
